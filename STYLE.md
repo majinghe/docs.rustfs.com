@@ -94,6 +94,6 @@ RUSTFS_VOLUMES="/data"
 ## Product Terminology
 
 - The product is **RustFS** (capital R, capital FS) — never "rustFS", "Rustfs", or "RUSTFS".
-- RustFS ships as a single binary and an official **Helm chart** for Kubernetes. There is **no Operator, no Tenant CRD, and no KES component** — do not reference them.
+- RustFS ships as a single binary and an official **Helm chart** for Kubernetes. The separate official **RustFS Operator** repository provides a pre-release `Tenant` CRD; verify its current release status before documenting it. RustFS has no KES component.
 - Key management is the **built-in KMS** with `local`, `vault`, and `vault-transit` backends.
 - Observability is **OpenTelemetry (OTLP)**-based: metrics, logs, and traces export through an OTLP endpoint.

@@ -1,10 +1,11 @@
 ---
-title: "Management Guide"
-description: "Guide to managing RustFS buckets, objects, and permissions."
+title: "Administration"
+description: "Guide to administering RustFS data, protocols, browser access, and permissions."
 ---
 
-This section covers:
+This section covers data, protocol, browser access, and identity administration:
 
-- [Bucket Management](./bucket/index.md)
-- [Object Management](./object/index.md)
+- [Data Management](./data/object/object-lock.md)
+- [Protocol Support](./protocols/s3.md)
+- [CORS Configuration](./cors/index.md)
 - [IAM Management](../administration/iam/index.md)

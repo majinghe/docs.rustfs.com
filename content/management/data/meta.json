@@ -1,0 +1,9 @@
+{
+  "title": "Data Management",
+  "pages": [
+    "object",
+    "bucket",
+    "data-tiering",
+    "lifecycle-management"
+  ]
+}

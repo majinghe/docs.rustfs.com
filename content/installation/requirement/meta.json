@@ -1,0 +1,9 @@
+{
+  "title": "Requirement",
+  "pages": [
+    "[Topology Selection](/installation#deployment-mode-comparison)",
+    "[EC Configuration](/concepts/principle/erasure-coding)",
+    "disk-preparation",
+    "checklists"
+  ]
+}

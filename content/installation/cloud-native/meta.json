@@ -1,0 +1,7 @@
+{
+	"title": "Cloud Native",
+	"pages": [
+		"[Helm Chart](/installation/cloud-native/helm-chart)",
+		"[Operator](/installation/cloud-native/operator)"
+	]
+}

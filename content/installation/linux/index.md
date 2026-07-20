@@ -25,4 +25,4 @@ Four or more servers, each with one or more disks. Erasure coding spans servers,
 
 ## Before Production
 
-Work through the [Pre-Installation Checklists](../checklists/index.md) — hardware, network, software, and security — before deploying to production. If you don't need production standards, you can skip them.
+Work through the [Pre-Installation Checklists](../requirement/checklists/index.md) — hardware, network, software, and security — before deploying to production. If you don't need production standards, you can skip them.

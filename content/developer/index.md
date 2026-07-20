@@ -1,5 +1,5 @@
 ---
-title: RustFS Developer Guide
+title: Developer
 description: Guide to using STS, MCP, MinIO Client, SDKs, and APIs with RustFS.
 ---
 

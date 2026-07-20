@@ -12,8 +12,8 @@ description: >-
 # Writing RustFS documentation
 
 This is a **FumaPress** site (Waku + Fumadocs). Pages live in `content/`; each
-page's URL mirrors its path (`content/management/bucket/creation.md` →
-`/management/bucket/creation`). Navigation is defined by `content/meta.json`
+page's URL mirrors its path (`content/management/data/bucket/creation.md` →
+`/management/data/bucket/creation`). Navigation is defined by `content/meta.json`
 (root sidebar) and per-folder `meta.json` files.
 
 Read `STYLE.md` (repo root) for the full style guide and `AGENTS.md` for repo

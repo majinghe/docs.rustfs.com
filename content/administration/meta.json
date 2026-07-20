@@ -1,0 +1,12 @@
+{
+  "title": "Security & Compliance",
+  "pages": [
+    "[IAM Management](/administration/iam)",
+    "security/encryption",
+    "security/sts-token-service",
+    "security/oidc",
+    "[TLS Configuration](/integration/tls-configured)",
+    "[Audit Logs](/administration/security/audit-logs)",
+    "[Credential Management](/operations/credentials)"
+  ]
+}

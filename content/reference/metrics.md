@@ -5,7 +5,7 @@ description: "This article lists the RustFS metric names, types, and labels that
 
 ## How to Read This Page
 
-RustFS exports metrics via OTLP push — there is no native `/metrics` scrape endpoint. Run an OpenTelemetry Collector with a Prometheus exporter and point `RUSTFS_OBS_ENDPOINT` at it; see [Monitoring and Alerting](../operations/monitoring) for the pipeline setup.
+RustFS exports metrics via OTLP push — there is no native `/metrics` scrape endpoint. Run an OpenTelemetry Collector with a Prometheus exporter and point `RUSTFS_OBS_ENDPOINT` at it; see [Observability](../operations/observability) for the pipeline setup.
 
 Every name below is verified against the server source. The list covers the operations-relevant subset exported via OTLP; internal and experimental instruments are omitted, and new releases may add metrics not listed here. Label sets are those recorded at the emission site — the Collector and Prometheus may attach additional resource labels (`service_name`, instance, and so on).
 

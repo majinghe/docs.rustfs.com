@@ -146,7 +146,7 @@ Log in to the Console with the access key and secret key you set at install time
 
 ## 7. Scaling out with server pools
 
-In distributed mode the chart can run multiple **server pools** — independent StatefulSets whose drives together form one cluster. This is the chart-level equivalent of adding a Server Pool as described in [Availability and Scalability](../../upgrade-scale/availability-and-resiliency.md).
+In distributed mode the chart can run multiple **server pools** — independent StatefulSets whose drives together form one cluster. This is the chart-level equivalent of adding a Server Pool as described in [Pool Expansion](../../operations/scaling/storage-pool-expansion.md).
 
 To expand an existing deployment, enable pools and describe the current layout as pool 0 plus your new capacity:
 
@@ -195,6 +195,6 @@ Helm does not delete PVCs created by StatefulSet volume claim templates. If you 
 
 ## Next steps
 
-- [Availability and Scalability](../../upgrade-scale/availability-and-resiliency.md) — how Server Pool expansion works at the cluster level
-- [Upgrade](../../upgrade-scale/upgrade.md) — zero-downtime rolling upgrades
+- [Pool Expansion](../../operations/scaling/storage-pool-expansion.md) — how Server Pool expansion works at the cluster level
+- [Kubernetes Upgrade](../../operations/upgrade/kubernetes/index.md) — upgrade Helm- and Operator-managed deployments
 - [TLS configuration](../../integration/tls-configured.md) — end-to-end TLS options

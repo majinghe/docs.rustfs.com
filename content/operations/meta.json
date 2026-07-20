@@ -1,0 +1,12 @@
+{
+  "title": "Operations & Observability",
+  "pages": [
+    "upgrade",
+    "scaling",
+    "high-availability",
+    "observability",
+    "cluster-health-check",
+    "event-notifications",
+    "[Troubleshooting](/troubleshooting)"
+  ]
+}
