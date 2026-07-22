@@ -1,6 +1,7 @@
 {
   "title": "Administration",
   "pages": [
+    "[Console](/management/console)",
     "data",
     "protocols",
     "cors",
