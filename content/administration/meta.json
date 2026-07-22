@@ -3,7 +3,7 @@
   "pages": [
     "[IAM Management](/administration/iam)",
     "security/encryption",
-    "security/sts-token-service",
+    "[STS Token Service](/administration/security/sts-token-service)",
     "security/oidc",
     "[TLS Configuration](/integration/tls-configured)",
     "[Audit Logs](/administration/security/audit-logs)",
