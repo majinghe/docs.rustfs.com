@@ -5,7 +5,6 @@
     "data",
     "protocols",
     "cors",
-    "[Nginx Reverse Proxy](/integration/nginx)",
     "[Virtual-Host Access](/integration/virtual)"
   ]
 }

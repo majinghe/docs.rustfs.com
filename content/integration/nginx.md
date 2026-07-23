@@ -1,9 +1,7 @@
 ---
-title: "Nginx Reverse Proxy"
-description: "Configuration for implementing Nginx reverse proxy with RustFS."
+title: "Nginx"
+description: "Configure Nginx as a reverse proxy for the RustFS S3 API and Console."
 ---
-
-# Nginx Integration
 
 Nginx integration enables:
 

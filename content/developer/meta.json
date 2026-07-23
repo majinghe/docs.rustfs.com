@@ -3,6 +3,7 @@
   "pages": [
     "mc",
     "sdk",
+    "integration",
     "license"
   ]
 }

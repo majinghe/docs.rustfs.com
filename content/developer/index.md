@@ -9,4 +9,5 @@ This guide provides instructions for integrating and interacting with RustFS usi
 - [MCP Usage Guide](./mcp.md)
 - [MinIO Client Usage Guide](./mc.md)
 - [SDK Usage Guide](./sdk/index.md)
+- [Integration Guide](./integration/index.md)
 - API Usage Guide
