@@ -226,6 +226,12 @@ e07121ecdd39   rustfs/rustfs:latest                              "/entrypoint.sh
 
 Whether you start only the `rustfs-server` or together with observability services, the S3 API is served at `http://localhost:9000`, and the RustFS Console is at `http://localhost:9001` — open it in a browser and log in with the access key and secret key you configured above (the `<your-access-key>` / `<your-secret-key>` placeholders). Generate a strong secret with, for example, `openssl rand -base64 24`, and never ship the placeholder values to production.
 
+:::warning[Set container credentials immediately]
+
+Set unique `RUSTFS_ACCESS_KEY` and `RUSTFS_SECRET_KEY` environment variables before exposing RustFS to a network. Do not use the well-known `rustfsadmin` value for either credential. For `docker run`, pass both values with `-e`. For Docker Compose, define both variables in the `rustfs` service environment or in the environment file used for variable substitution, then recreate the service with `docker compose up -d rustfs`.
+
+:::
+
 ## 4. Verification and Access
 
 1. **View Container Status and Logs:**

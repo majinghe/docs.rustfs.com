@@ -3,7 +3,7 @@
   "pages": [
     "object",
     "bucket",
-    "data-tiering",
+    "tiered-storage",
     "lifecycle-management"
   ]
 }

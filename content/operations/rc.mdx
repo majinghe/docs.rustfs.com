@@ -139,6 +139,20 @@ rc object list local/my-bucket
 rc object stat local/my-bucket/hello.txt
 ```
 
+### Manage lifecycle rules and storage tiers
+
+`rc` groups lifecycle rules, remote storage tiers, and restore requests under `bucket lifecycle`:
+
+```bash
+rc bucket lifecycle rule list local/my-bucket
+rc bucket lifecycle tier list local
+rc bucket lifecycle restore local/my-bucket/hello.txt --days 7
+```
+
+Use the `rule` commands to add, edit, remove, export, or import bucket lifecycle rules. Use the `tier` commands to add, inspect, update credentials for, or remove a remote tier. The older `rc ilm` form remains available as a compatibility alias, but we recommend `rc bucket lifecycle` for new scripts.
+
+See [Lifecycle Management](/administration/data/lifecycle-management) for rule and restore workflows, and [Tiered Storage](/administration/data/tiered-storage) for remote-tier configuration and maintenance.
+
 ### Discover more commands
 
 Use `--help` at any command level to see the commands and options supported by your installed version:
@@ -149,6 +163,7 @@ rc alias --help
 rc admin --help
 rc admin info --help
 rc bucket --help
+rc bucket lifecycle --help
 rc object --help
 ```
 

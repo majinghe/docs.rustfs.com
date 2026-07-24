@@ -36,6 +36,12 @@ podman run -d \
   /data
 ```
 
+:::warning[Set credentials when creating the container]
+
+Set unique `RUSTFS_ACCESS_KEY` and `RUSTFS_SECRET_KEY` environment variables before exposing RustFS to a network. Do not use the well-known `rustfsadmin` value for either credential. If the container was started without custom credentials, stop and recreate it with both `-e` options shown above; the `rustfs-data` volume remains intact.
+
+:::
+
 ## 4. Verify the deployment
 
 Check the container and the S3 API health endpoint:
@@ -49,6 +55,6 @@ The S3 API is available at `http://localhost:9000`, and the Console is available
 
 ## Next steps
 
-- [Console first steps](../console-first-steps.md)
+- [RustFS Console](/administration/console)
 - [Configure an S3 client](../../developer/examples/aws-cli.md)
 - [TLS configuration](../../integration/tls-configured.md)

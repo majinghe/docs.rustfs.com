@@ -6,7 +6,6 @@
     "container",
     "cloud-native",
     "[Windows](/installation/windows)",
-    "[macOS](/installation/macos)",
-    "console-first-steps"
+    "[macOS](/installation/macos)"
   ]
 }

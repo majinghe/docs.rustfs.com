@@ -5,6 +5,15 @@ description: "Choose the right RustFS deployment path: local trial, single-node 
 
 RustFS is a distributed object storage system written in Rust and released under the Apache 2.0 license. It runs on Linux, Windows, macOS, FreeBSD, and containers, across x86, ARM, RISC-V, and other CPU architectures.
 
+:::warning[Change the default credentials immediately]
+
+After installation, set unique values for `RUSTFS_ACCESS_KEY` and `RUSTFS_SECRET_KEY` before exposing RustFS to a network. Do not use the well-known `rustfsadmin` value for either credential.
+
+- For a Linux binary or systemd installation, set both values in `/etc/default/rustfs`, then restart the `rustfs` service.
+- For Docker, Podman, or Docker Compose, pass both values as container environment variables when creating the container. Recreate an existing container if it was started without them.
+
+:::
+
 ## Choose Your Path
 
 | Your goal | Recommended path | Guide |
