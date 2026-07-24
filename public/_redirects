@@ -1,0 +1,13 @@
+/management /administration 301
+/management/* /administration/:splat 301
+/administration/iam /security-compliance/iam 301
+/administration/iam/oidc /security-compliance/oidc 301
+/administration/iam/* /security-compliance/iam/:splat 301
+/administration/security/encryption /security-compliance/encryption 301
+/administration/security/encryption/* /security-compliance/encryption/:splat 301
+/administration/security/sts-token-service /security-compliance/iam/sts 301
+/administration/security/oidc /security-compliance/oidc 301
+/administration/security/audit-logs /security-compliance/audit-logs 301
+/security-compliance/iam/oidc /security-compliance/oidc 301
+/security-compliance/sts-token-service /security-compliance/iam/sts 301
+/operations/cluster-health-check /operations/status-check 301

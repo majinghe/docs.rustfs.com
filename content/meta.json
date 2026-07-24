@@ -1,18 +1,11 @@
 {
   "root": true,
   "pages": [
-    "!concepts/introduction",
-    "!installation/linux/quick-start",
-    "!installation/console-first-steps",
-    "!concepts/architecture",
-    "!concepts/principle/erasure-coding",
-    "!concepts/comparison",
-    "!developer/examples",
-
     "installation",
-    "management",
     "administration",
+    "security-compliance",
     "operations",
+    "troubleshooting",
     "developer",
     "reference"
   ]

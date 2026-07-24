@@ -1,12 +1,12 @@
 {
   "title": "Operations & Observability",
   "pages": [
+    "rc",
     "upgrade",
     "scaling",
     "high-availability",
     "observability",
-    "cluster-health-check",
-    "event-notifications",
-    "[Troubleshooting](/troubleshooting)"
+    "status-check",
+    "event-notifications"
   ]
 }

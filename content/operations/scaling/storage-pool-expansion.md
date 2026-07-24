@@ -1,266 +1,114 @@
 ---
 title: "Pool Expansion"
-description: "Learn how to expand a RustFS cluster by adding a storage pool and verifying the new topology."
+description: "Add a storage pool to a RustFS cluster and verify the expanded topology through the Console or rc."
 ---
 
-> Note: This document is based on the latest RustFS version. Please perform full data backup before scaling operations. For production environments, it's recommended to contact RustFS technical support engineers for solution review.
+## Overview
 
-## Scaling Solution Overview
+### Requirements
 
-RustFS supports horizontal scaling by adding new storage pools (Server Pool). Each new storage pool must meet:
+- Install [`rc`](/operations/rc) on the administration host before using the `rc` workflow in this guide.
+- Configure credentials with permission to read RustFS cluster and pool status.
 
-1. Nodes within the storage pool must use **consecutive hostnames** (e.g., node5-node8)
-2. Single storage pool must use **same specifications** of disks (type/capacity/quantity)
-3. New storage pools must maintain **time synchronization** and **network connectivity** with existing clusters
+RustFS expands capacity by appending a **server pool** to the cluster topology. Each pool is one space-separated volume expression in `RUSTFS_VOLUMES`. After the expanded topology is applied, new writes can use the added capacity; existing objects remain in their current pools until you run [Rebalancing](./data-rebalancing.md).
 
-```mermaid
-flowchart LR
-    APP[Applications] --> S3API(["S3 API"])
+This guide uses the following two-pool example:
 
-    subgraph DIST["Distributed RustFS"]
-        direction TB
-        subgraph N1["Node 1"]
-            direction LR
-            S3a[S3]
-            subgraph OL1["Object Layer"]
-                direction TB
-                C1[Cache]
-                K1[Compression]
-                E1[Encryption]
-                B1["Erasure Code · Bitrot"]
-            end
-            SL1["Storage Layer"]
-            J1[("JBOD / FS disks")]
-            S3a -->|Object API| OL1
-            OL1 -->|Storage API| SL1
-            SL1 <--> J1
-        end
-        subgraph N2["Node 2"]
-            direction LR
-            S3b[S3]
-            subgraph OL2["Object Layer"]
-                direction TB
-                C2[Cache]
-                K2[Compression]
-                E2[Encryption]
-                B2["Erasure Code · Bitrot"]
-            end
-            SL2["Storage Layer"]
-            J2[("JBOD / FS disks")]
-            S3b -->|Object API| OL2
-            OL2 -->|Storage API| SL2
-            SL2 <--> J2
-        end
-        NN["Node n ..."]
-        N1 <-->|Internal RESTful API| N2
-        N2 <-->|Internal RESTful API| NN
-    end
-
-    S3API --> N1
-    S3API --> N2
-    S3API --> NN
-
-    classDef server fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e293b;
-    classDef store fill:#dcfce7,stroke:#22c55e,stroke-width:2px,color:#1e293b;
-    classDef svc fill:#eef2ff,stroke:#6366f1,stroke-width:2px,color:#1e293b;
-    classDef muted fill:#f3f4f6,stroke:#9ca3af,stroke-width:2px,color:#1e293b;
-    classDef accent fill:#fae8ff,stroke:#c026d3,stroke-width:2px,color:#1e293b;
-    class APP,NN muted
-    class S3API accent
-    class S3a,S3b,SL1,SL2 server
-    class C1,K1,E1,B1,C2,K2,E2,B2 svc
-    class J1,J2 store
+```ini title="/etc/default/rustfs"
+RUSTFS_VOLUMES="http://rustfs-node1:9000/data/rustfs{1...4}/mnmd http://rustfs-node2:9000/data/rustfs{1...4}/mnmd"
 ```
 
----
+Before expanding:
 
-## Pre-Scaling Preparation
+- Back up critical data and run the workflow during a maintenance window.
+- Use the same RustFS version, credentials, and complete `RUSTFS_VOLUMES` value on every node.
+- Verify name resolution, time synchronization, and port `9000` connectivity between all old and new nodes.
+- Prepare the new pool with the intended disk count and storage specification.
 
-### 1.1 Hardware Planning Requirements
+:::warning[Append the pool; do not replace the topology]
 
-| Item | Minimum Requirements | Recommended Production Configuration |
-|---------------|---------------------------|---------------------------|
-| Node Count | 4 nodes/storage pool | 4 - 8 nodes/storage pool |
-| Single Node Memory | 128 GB | 128 GB |
-| Disk Type | SSD | NVMe SSD |
-| Single Disk Capacity | ≥1 TB | ≥4 TB |
-| Network Bandwidth | 10 Gbps | 25 Gbps |
+Every node must start with the complete ordered pool list. Omitting the existing pool or using a different expression on one node creates an inconsistent topology.
 
-### 1.2 System Environment Check
+:::
+
+## Operation
+
+### Console
+
+The Console displays storage pools but does not add a pool to the server startup topology. Use this Console-assisted workflow:
+
+1. Record the existing pools and their usage from **Rebalance** or **Pool Decommission**.
+2. Install the same RustFS version and service configuration on the new pool node or nodes.
+3. Append the new pool expression to `RUSTFS_VOLUMES` on every existing and new node. Keep the existing expressions unchanged and in the same order.
+4. Restart RustFS across all nodes so every process starts with the same expanded topology.
+5. Wait for all nodes to become ready, then refresh the pool list in the Console.
+
+:::note[Image placeholder]
+
+Add a screenshot of the Console pool list showing the existing and newly added pools.
+
+:::
+
+For a Helm deployment, append the new entry to `pools.list` and apply `helm upgrade`. Do not remove or reorder existing entries.
+
+### rc
+
+Configure an alias with credentials that can read cluster and pool status:
 
 ```bash
-# Check hostname continuity (new node example)
-cat /etc/hosts
-192.168.10.5 node5
-192.168.10.6 node6
-192.168.10.7 node7
-192.168.10.8 node8
-
-# Verify time synchronization status
-timedatectl status | grep synchronized
-
-# Check firewall rules (all nodes need to open ports 9000/9001)
-firewall-cmd --list-ports | grep 9000
-firewall-cmd --list-ports | grep 9001
+rc alias set rustfs http://<server-ip>:9000 <your-access-key> <your-secret-key>
 ```
 
----
-
-## Scaling Implementation Steps
-
-### 2.1 New Node Basic Configuration
+Record the current topology:
 
 ```bash
-# Create dedicated user (execute on all new nodes)
-groupadd rustfs-user
-useradd -M -r -g rustfs-user rustfs-user
-
-# Create storage directories (example with 8 disks)
-mkdir -p /data/rustfs{0..7}
-chown -R rustfs-user:rustfs-user /data/rustfs*
+rc admin pool list rustfs
 ```
 
-### 2.2 Install RustFS Binary on all new nodes
+Prepare the new nodes, append the new pool expression to the complete `RUSTFS_VOLUMES` value on every node, and restart RustFS across the cluster. `rc` does not mutate the server startup topology.
+
+After the cluster returns, list the pools again:
 
 ```bash
-# Check rustfs version on existing node
-/usr/local/bin/rustfs --version
-
-# Download the binary that matches the existing cluster version from
-# https://github.com/rustfs/rustfs/releases (asset name: rustfs-linux-x86_64-musl-v<version>.zip)
-wget https://github.com/rustfs/rustfs/releases/download/<version>/rustfs-linux-x86_64-musl-v<version>.zip
-unzip rustfs-linux-x86_64-musl-v<version>.zip
-chmod +x rustfs
-mv rustfs /usr/local/bin/
+rc admin pool list rustfs
 ```
 
-### 2.3 Create RustFS configuration file on all new nodes (/etc/default/rustfs)
+Use a zero-based pool ID to inspect the new pool in detail:
 
 ```bash
-# Create configuration file (/etc/default/rustfs)
-# Please replace <Your RustFS admin username> and <Secure password of your RustFS admin> with yours values!
-cat <<EOF > /etc/default/rustfs
-RUSTFS_ACCESS_KEY=<Your RustFS admin username> # e.g. admin
-RUSTFS_SECRET_KEY=<Secure password of your RustFS admin> # e.g. output of: openssl rand -base64 24
-RUSTFS_VOLUMES="http://node{1...4}:9000/data/rustfs{0...3} http://node{5...8}:9000/data/rustfs{0...7}" # add new storage pool to the existing; must match the hostname pattern used by the existing nodes byte for byte
-RUSTFS_ADDRESS=":9000"
-RUSTFS_CONSOLE_ADDRESS=":9001"
-EOF
+rc admin pool status rustfs 1 --by-id
 ```
 
-### 2.4 Configure System Service on all new nodes
+:::note
+
+`rc admin expand start`, `status`, and `stop` are aliases for the post-expansion rebalance workflow. They redistribute existing data; they do not append a pool to `RUSTFS_VOLUMES`.
+
+:::
+
+## Verification
+
+### Console
+
+Confirm that:
+
+- The pool list shows the original pool and the new pool.
+- Every expected node and disk is online.
+- The new pool reports the expected total and available capacity.
+- The cluster reports no degraded nodes before you resume normal traffic.
+
+:::note[Image placeholder]
+
+Add a screenshot of the expanded topology and healthy pool status in the Console.
+
+:::
+
+### rc
+
+Run:
 
 ```bash
-# Create systemd service file
-
-sudo tee /etc/systemd/system/rustfs.service <<EOF
-[Unit]
-Description=RustFS Object Storage Server
-Documentation=https://rustfs.com/docs/
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=notify
-NotifyAccess=main
-User=root
-Group=root
-
-WorkingDirectory=/usr/local
-EnvironmentFile=-/etc/default/rustfs
-ExecStart=/usr/local/bin/rustfs \$RUSTFS_VOLUMES
-
-LimitNOFILE=1048576
-LimitNPROC=32768
-TasksMax=infinity
-
-Restart=always
-RestartSec=10s
-
-OOMScoreAdjust=-1000
-SendSIGKILL=no
-
-# RustFS reports READY only after storage, IAM, and peer checks pass; on a
-# full-cluster restart every node waits for its peers, so allow up to 120s.
-TimeoutStartSec=120s
-TimeoutStopSec=30s
-
-NoNewPrivileges=true
-ProtectHome=true
-PrivateTmp=true
-PrivateDevices=true
-ProtectClock=true
-ProtectKernelTunables=true
-ProtectKernelModules=true
-ProtectControlGroups=true
-RestrictSUIDSGID=true
-RestrictRealtime=true
-
-# service log configuration
-StandardOutput=append:/var/logs/rustfs/rustfs.log
-StandardError=append:/var/logs/rustfs/rustfs-err.log
-
-[Install]
-WantedBy=multi-user.target
-EOF
+rc admin pool list rustfs
+rc admin pool status rustfs 1 --by-id
 ```
 
-### 2.5 Reload service configuration on all new nodes
-
-```bash
-#Reload service configuration
-sudo systemctl daemon-reload
-
-#Start service and set auto-start
-sudo systemctl enable --now rustfs
-```
-
-### 2.6 Cluster Scaling Operation on all existing nodes
-
-```bash
-# Update configuration on all existing nodes (following command will add new storage pool to the existing $RUSTFS_VOLUMES list)
-sed -i '/RUSTFS_VOLUMES/s|"$| http://node{5...8}:9000/data/rustfs{0...7}"|' /etc/default/rustfs
-```
-
-### 2.7 Cluster Scaling Operation on all nodes (existing and added)
-
-```bash
-# Global service restart (execute simultaneously on all nodes)
-systemctl restart rustfs.service
-```
-
----
-
-## Post-Scaling Verification
-
-### 3.1 Check Server List in RustFS Console
-Open in the RustFS Console Performance menu, e.g. http://node1:9001/rustfs/console/performance and check node join status in the Server List
-
-### 3.2 Data Balance Verification
-
-New objects are placed across pools according to available capacity. Check per-pool usage in the RustFS Console; it should trend toward each storage pool's capacity ratio. Existing data is not moved automatically — to spread it across the new pool, start a rebalance from the Console and expect it to run in the background for a while.
-
----
-
-## Important Notes
-
-1. **Restart Scope**: Changing `RUSTFS_VOLUMES` (adding a storage pool) requires restarting all nodes so they agree on the new topology — restart them together during this operation. For routine binary upgrades or parameter changes, use a rolling restart (one node at a time) to avoid downtime.
-2. **Capacity Planning Recommendation**: Should plan next scaling when storage usage reaches 70%
-3. **Performance Tuning Recommendations**:
-
- ```bash
- # Adjust kernel parameters (all nodes)
- echo "vm.swappiness=10" >> /etc/sysctl.conf
- echo "net.core.somaxconn=32768" >> /etc/sysctl.conf
- sysctl -p
- ```
-
----
-
-## Troubleshooting Guide
-
-| Symptom | Check Point | Fix Command |
-|---------------------------|---------------------------------|-------------------------------|
-| New nodes cannot join cluster | Check port 9000 connectivity | `telnet node5 9000` |
-| Uneven data distribution | Check storage pool capacity configuration | Start a rebalance from the RustFS Console |
-| Console shows abnormal node status | Verify time synchronization status | `chronyc sources` |
+Verify that the new pool has the expected command-line expression and an active state. Write and read a test object through the normal S3 endpoint before starting a rebalance.

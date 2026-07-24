@@ -68,5 +68,4 @@ Use the verified mount paths when you configure `RUSTFS_VOLUMES`. Keep disk labe
 ## Next steps
 
 - [Choose a deployment topology](/installation#deployment-mode-comparison)
-- [Review erasure coding](/concepts/principle/erasure-coding)
 - [Continue with Linux prerequisites and service setup](/installation/linux/prerequisites-and-service)

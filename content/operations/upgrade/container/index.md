@@ -27,4 +27,4 @@ Recreate the container with the previous image tag and the unchanged persistent 
 
 ## Next steps
 
-Review [Cluster Health Check](/operations/cluster-health-check) for additional post-upgrade validation.
+Review [Status Check](/operations/status-check) for additional post-upgrade validation.

@@ -3,7 +3,7 @@ title: "Installation"
 description: "Choose the right RustFS deployment path: local trial, single-node or multi-node production, containers, and Kubernetes."
 ---
 
-RustFS is a distributed object storage system written in Rust, fully compatible with the S3 protocol and released under the Apache 2.0 license. It runs on Linux, Windows, macOS, FreeBSD, and containers, across x86, ARM, RISC-V, and other CPU architectures. To learn more about the project itself, see [What is RustFS?](../concepts/introduction.md).
+RustFS is a distributed object storage system written in Rust and released under the Apache 2.0 license. It runs on Linux, Windows, macOS, FreeBSD, and containers, across x86, ARM, RISC-V, and other CPU architectures.
 
 ## Choose Your Path
 

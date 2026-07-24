@@ -1,7 +1,0 @@
-{
-  "title": "OIDC",
-  "pages": [
-    "[Keycloak](/administration/iam/oidc#example-keycloak)",
-    "[Authing](/administration/iam/oidc#example-authing)"
-  ]
-}

@@ -1,13 +1,12 @@
 ---
 title: Developer
-description: Guide to using STS, MCP, MinIO Client, SDKs, and APIs with RustFS.
+description: Guide to using STS, MCP, SDKs, and APIs with RustFS.
 ---
 
-This guide provides instructions for integrating and interacting with RustFS using STS, MCP (Model Context Protocol), MinIO Client (`mc`), SDKs, and APIs. It is designed to enable developers to build efficient and scalable applications on top of RustFS. This document covers the following topics:
+This guide provides instructions for integrating and interacting with RustFS using STS, MCP (Model Context Protocol), SDKs, and APIs. It is designed to enable developers to build applications on top of RustFS. This document covers the following topics:
 
 - STS
 - [MCP Usage Guide](./mcp.md)
-- [MinIO Client Usage Guide](./mc.md)
 - [SDK Usage Guide](./sdk/index.md)
 - [Integration Guide](./integration/index.md)
 - API Usage Guide

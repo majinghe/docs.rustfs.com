@@ -10,6 +10,7 @@ This guide takes you from an empty Linux server to a working RustFS instance: in
 - A Linux server (x86_64 or aarch64) with `systemd`, and root or sudo access
 - `unzip` installed, and outbound network access to download the package
 - Ports `9000` (S3 API) and `9001` (Console) reachable from your machine
+- [`rc`](/operations/rc) installed on your workstation for the command-line verification workflow
 
 ## 1. Install and start RustFS
 
@@ -61,18 +62,18 @@ Open `http://<server-ip>:9001` in your browser and sign in with the access key a
 2. Open the bucket and use the upload action to add any local file.
 3. Click the uploaded object to view its details — you have a working object store.
 
-Prefer the command line? The same two operations with the [MinIO Client (`mc`)](../../developer/mc.md):
+Prefer the command line? Configure [`rc`](/operations/rc), then perform the same operations:
 
 ```bash
-mc alias set rustfs http://<server-ip>:9000 <your-access-key> <your-secret-key>
-mc mb rustfs/my-bucket
-mc cp ./hello.txt rustfs/my-bucket
-mc ls rustfs/my-bucket
+rc alias set rustfs http://<server-ip>:9000 <your-access-key> <your-secret-key>
+rc bucket create rustfs/my-bucket
+rc object copy /path/to/hello.txt rustfs/my-bucket/hello.txt
+rc object list rustfs/my-bucket
 ```
 
 ```text
-Bucket created successfully `rustfs/my-bucket`.
-[2026-07-15 10:00:00 UTC]  12B hello.txt
+✓ Bucket 'rustfs/my-bucket' created successfully.
+/path/to/hello.txt -> rustfs/my-bucket/hello.txt
 ```
 
 <a id="mode"></a>

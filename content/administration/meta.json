@@ -1,12 +1,10 @@
 {
-  "title": "Security & Compliance",
+  "title": "Administration",
   "pages": [
-    "[IAM Management](/administration/iam)",
-    "security/encryption",
-    "[STS Token Service](/administration/security/sts-token-service)",
-    "security/oidc",
-    "[TLS Configuration](/integration/tls-configured)",
-    "[Audit Logs](/administration/security/audit-logs)",
-    "[Credential Management](/operations/credentials)"
+    "console",
+    "data",
+    "protocols",
+    "cors",
+    "[Virtual-Host Access](/integration/virtual)"
   ]
 }

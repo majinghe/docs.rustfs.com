@@ -1,16 +1,16 @@
 ---
-title: "Security & Compliance"
-description: "Configure identity, encryption, transport security, audit logging, and credentials for RustFS."
+title: "Administration"
+description: "Administer RustFS data, access protocols, and browser-based management."
 ---
 
-Use this section to secure access to RustFS and configure the controls required by your environment.
+Use this section to manage RustFS through the Console, administer buckets and objects, and configure access protocols.
 
-## Security areas
+## Administration areas
 
-- [IAM Management](./iam/index.md) covers users, groups, policies, and access keys.
-- [Data Encryption](./security/encryption/index.md) covers server-side encryption options and key management.
-- [STS Token Service](./security/sts-token-service/index.md) covers temporary credentials.
-- [OIDC](./iam/oidc.md) covers external identity providers.
-- [TLS Configuration](/integration/tls-configured) covers encrypted client and node connections.
-- [Audit Logs](./security/audit-logs.md) covers audit target configuration.
-- [Credential Management](/operations/credentials) covers root credentials and secret injection.
+- [Console](./console/index.md) covers browser-based administration and sign-in methods.
+- [Data Management](./data/object/object-lock.md) covers buckets, objects, lifecycle behavior, and data protection features.
+- [Protocol Support](./protocols/s3.md) covers S3, WebDAV, and FTPS access.
+- [CORS Configuration](./cors/index.md) covers cross-origin access to RustFS services.
+- [Virtual-Host Access](/integration/virtual) covers domain-based S3 addressing.
+
+For identity, encryption, transport security, and auditing, continue with [Security & Compliance](/security-compliance).

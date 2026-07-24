@@ -1,130 +1,119 @@
 ---
 title: "Pool Decommission"
-description: "This article describes how to retire a server pool with the decommission workflow and how to spread existing data onto new pools with rebalance, including the admin API endpoints, progress monitoring, and abort semantics."
+description: "Drain and retire a RustFS storage pool through the Console or rc, then verify that its data was relocated."
 ---
 
-## Concepts
+## Overview
 
-A RustFS cluster grows by adding **server pools** — additional groups of nodes/drives listed in `RUSTFS_VOLUMES` (space-separated expansion expressions). Two data-movement operations manage pools over their lifecycle:
+### Requirements
 
-- **Decommission** drains all objects off a pool onto the remaining active pools, so the pool can be removed from the deployment. Movement is one-directional and the pool is retired afterwards.
-- **Rebalance** redistributes existing objects across **all** pools after an expansion, so a newly added (empty) pool takes its fair share. No pool is removed.
+- Install [`rc`](/operations/rc) on the administration host before using the `rc` workflow in this guide.
+- Configure credentials with decommission administration permission.
 
-The two are mutually exclusive: rebalance refuses to start while a decommission is in progress, and both require a multi-pool deployment (single-pool clusters reject either operation because there is nowhere to move data).
+**Pool decommission** moves objects from a selected pool to the remaining active pools so the target pool can be removed from the deployment. Use it when retiring hardware, replacing a pool, or consolidating capacity.
 
-## When to Decommission
+Decommission is different from [Rebalancing](./data-rebalancing.md): rebalance keeps every pool active, while decommission drains and retires the selected pool. The two operations cannot run at the same time.
 
-- Retiring old hardware after adding a replacement pool.
-- Shrinking a cluster that was previously expanded.
-- Consolidating small pools into a larger one.
+Before starting:
 
-## Prerequisites
+- Keep at least one active pool after the operation.
+- Verify that the remaining pools have enough free capacity. RustFS requires their free space to cover the used bytes being drained plus a 30% overhead.
+- Confirm that every node and disk is healthy and no rebalance is running.
+- Back up critical data and schedule the operation during a lower-traffic period.
+- Record the exact pool ID and volume expression before selecting the target.
 
-1. **At least one active pool must remain.** You cannot decommission every pool; the request is rejected if no active pool would be left.
-2. **Remaining pools need capacity.** The server verifies before starting that the free space on the remaining active pools is at least the used bytes of the pool(s) being drained **plus a 30% overhead**. Otherwise the start request fails with `insufficient target pool capacity`.
-3. **Completed pools cannot be re-decommissioned.** Completion means the pool should now be removed from the deployment configuration (`RUSTFS_VOLUMES` / Helm pool list). Failed or canceled pools may be retried.
-4. Healthy cluster: run decommission with all nodes up; the operation persists its state and resumes after restarts, but starting it on a degraded cluster adds risk.
+Canceling a decommission does not roll back completed moves. Objects already relocated remain in the destination pools.
 
-:::warning
-Decommission moves data. Take a fresh backup or verify your replication targets before draining a pool, and schedule it in a low-traffic window.
+## Operation
+
+### Console
+
+1. Sign in to the RustFS Console with an account that has decommission administration permission.
+2. Open **Pool Decommission**.
+3. Locate the pool to retire and verify its ID, volume expression, used capacity, and status.
+4. Select **Start Decommission** for that pool.
+5. Review the confirmation dialog carefully, then select **Confirm**.
+6. Use **Sync** to refresh the pool state and movement counters until the operation completes.
+
+:::note[Image placeholder]
+
+Add screenshots of the pool selection, confirmation dialog, running progress, and completed decommission state.
+
 :::
 
-## Admin API Endpoints
+After completion, remove the drained pool expression from `RUSTFS_VOLUMES` on every remaining node and restart RustFS with the same ordered topology. For Helm, decommission the pool before removing its entry from `pools.list`; never remove or reorder a live pool entry.
 
-The admin API is served on port 9000 under the `/rustfs/admin/v3` prefix (a MinIO-compatible `/minio/admin` prefix also exists). All requests must be signed (AWS Signature V4) with credentials that hold the decommission admin permission — the root credential works. The `pool` query parameter takes the pool's command-line expression exactly as configured, or a zero-based pool index with `by-id=true`.
+### rc
 
-| Method | Path | Purpose |
-| --- | --- | --- |
-| `GET` | `/rustfs/admin/v3/pools/list` | List pools and their status |
-| `GET` | `/rustfs/admin/v3/pools/status?pool=<pool>` | Status of one pool |
-| `GET` | `/rustfs/admin/v3/decommission/status[?pool=<pool>]` | Decommission progress (all pools or one) |
-| `POST` | `/rustfs/admin/v3/pools/decommission?pool=<pool>` | Start draining a pool (comma-separated multi-pool targets are queued) |
-| `POST` | `/rustfs/admin/v3/pools/cancel?pool=<pool>` | Cancel a running decommission |
-| `POST` | `/rustfs/admin/v3/pools/clear?pool=<pool>` | Clear failed/canceled decommission metadata |
-
-Example with `curl` (SigV4 signing via `--aws-sigv4`):
+Configure the cluster alias if needed, then list the pools:
 
 ```bash
-# Start decommissioning pool 0 (by index)
-curl -X POST \
-  --aws-sigv4 "aws:amz:us-east-1:s3" \
-  --user "<your-access-key>:<your-secret-key>" \
-  "http://<node>:9000/rustfs/admin/v3/pools/decommission?pool=0&by-id=true"
-
-# Or address the pool by its volumes expression
-curl -X POST \
-  --aws-sigv4 "aws:amz:us-east-1:s3" \
-  --user "<your-access-key>:<your-secret-key>" \
-  "http://<node>:9000/rustfs/admin/v3/pools/decommission?pool=http://server{1...4}/disk{1...4}"
+rc alias set rustfs http://<server-ip>:9000 <your-access-key> <your-secret-key>
+rc admin pool list rustfs
 ```
 
-The request can be sent to any node; if the target pool's leader is a different node, RustFS forwards the operation over the authenticated internode RPC channel.
+Start decommissioning pool `0` by its zero-based ID:
 
-The upstream Helm chart documents the same workflow through an admin CLI as `rc admin pool ls` / `rc admin decommission` / `rc admin rebalance start <alias>`.
+```bash
+rc admin decommission start rustfs 0 --by-id
+```
 
-:::note
-The `rc` admin CLI is referenced by the upstream Helm README but may not be generally available in your distribution yet. The HTTP admin API above and the RustFS console are the verified interfaces; treat `rc admin ...` commands as equivalent shorthand where the tool is available.
+You can instead pass the exact pool volume expression without `--by-id`:
+
+```bash
+rc admin decommission start rustfs 'http://rustfs-node1:9000/data/rustfs{1...4}/mnmd'
+```
+
+Monitor all pools or only the target pool:
+
+```bash
+rc admin decommission status rustfs
+rc admin decommission status rustfs 0 --by-id
+```
+
+To cancel a running operation, use:
+
+```bash
+rc admin decommission cancel rustfs 0 --by-id
+```
+
+If a decommission is failed or canceled, clear its metadata before retrying:
+
+```bash
+rc admin decommission clear rustfs 0 --by-id
+```
+
+After the target reports `complete`, remove its expression from `RUSTFS_VOLUMES` on every remaining node and restart RustFS with the reduced topology.
+
+## Verification
+
+### Console
+
+Confirm that the target pool reports `Completed`, with zero failed objects and zero failed bytes. After removing the pool from the startup topology and restarting RustFS, verify that:
+
+- The retired pool no longer appears as an active pool.
+- Every remaining node and disk is online.
+- Remaining pools show the relocated data and have adequate free capacity.
+- Existing objects can still be listed, read, and downloaded.
+
+:::note[Image placeholder]
+
+Add screenshots of the completed decommission and the final topology after the retired pool is removed.
+
 :::
 
-## Monitoring Progress
+### rc
 
-Poll the decommission status endpoint:
-
-```bash
-curl -s \
-  --aws-sigv4 "aws:amz:us-east-1:s3" \
-  --user "<your-access-key>:<your-secret-key>" \
-  "http://<node>:9000/rustfs/admin/v3/decommission/status" | jq
-```
-
-Each pool entry reports a `decommissionInfo` object with (field names as serialized):
-
-- `startTime`, `startSize`, `totalSize`, `currentSize`
-- `complete`, `failed`, `canceled`
-- `objectsDecommissioned`, `objectsDecommissionedFailed`
-- `bytesDecommissioned`, `bytesDecommissionedFailed`
-
-The operation is finished when `complete` is `true` and the failed counters are zero. Only one pool actively moves data at a time; additional targets in a multi-pool request wait in a queue.
-
-After completion, remove the drained pool from `RUSTFS_VOLUMES` (or the Helm `pools` list — entries there are append-only, so decommission **before** removing an entry) and restart the cluster with the new topology.
-
-## Cancel, Clear, and Rollback Semantics
-
-- **Cancel** (`POST /rustfs/admin/v3/pools/cancel?pool=<pool>`) stops the running drain. The pool is marked `canceled` and stops receiving decommission traffic; a canceled (or failed) pool can be decommissioned again later.
-- **Clear** (`POST /rustfs/admin/v3/pools/clear?pool=<pool>`) removes failed/canceled decommission metadata only, so status output is clean again.
-- **There is no data rollback.** Objects already moved to other pools stay where they are; cancel/clear never move data back. This is by design — a partially drained pool is still fully functional, just emptier.
-
-## Rebalance After Expansion
-
-After adding a pool, existing objects stay where they were written; only new writes prefer the pool with more free space. To actively spread existing data:
-
-| Method | Path | Purpose |
-| --- | --- | --- |
-| `POST` | `/rustfs/admin/v3/rebalance/start` | Start a cluster-wide rebalance (no query parameters; returns `{"id": ...}`) |
-| `GET` | `/rustfs/admin/v3/rebalance/status` | Per-pool progress: `objects`, `versions`, `bytes`, `remainingBuckets`, current `bucket`/`object`, `elapsed`, `eta` |
-| `POST` | `/rustfs/admin/v3/rebalance/stop` | Stop the rebalance |
+Before removing the pool from the topology, run:
 
 ```bash
-curl -X POST \
-  --aws-sigv4 "aws:amz:us-east-1:s3" \
-  --user "<your-access-key>:<your-secret-key>" \
-  "http://<node>:9000/rustfs/admin/v3/rebalance/start"
+rc admin decommission status rustfs 0 --by-id
 ```
 
-Rules enforced by the server:
-
-- rejected on single-pool deployments;
-- rejected while a decommission is in progress (`cannot start rebalance while decommission is in progress`);
-- rejected when a rebalance is already running (`rebalance is already in progress`).
-
-Rebalance runs until pools converge toward equal usage ratios; you can stop it at any time — like decommission, stopping never undoes moves already made.
-
-## Local Test Rig
-
-The upstream repository ships `docker-compose.decommission.yml`, a single-container two-pool layout useful for rehearsing the workflow before touching production:
+Confirm that the status is `complete` and the failed object and byte counters are zero. After updating `RUSTFS_VOLUMES` and restarting RustFS, run:
 
 ```bash
-# Two pools inside one container: /data/pool0/disk{1...4} and /data/pool1/disk{1...4}
-# S3 on host port 9100, console on 9101
-docker compose -f docker-compose.decommission.yml up -d
+rc admin pool list rustfs
 ```
+
+Verify that only the intended active pools remain. Read objects that previously resided on the retired pool and write a new test object through the S3 endpoint.

@@ -19,4 +19,4 @@ Iceberg does not define one universal object-store configuration. Apply these va
 
 ## Next steps
 
-See [Access Key Management](/administration/iam/access-token) to create dedicated credentials.
+See [Access Key Management](/security-compliance/iam/access-token) to create dedicated credentials.

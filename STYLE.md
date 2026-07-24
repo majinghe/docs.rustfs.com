@@ -9,7 +9,7 @@ This guide defines the writing and formatting conventions for all pages under `c
 - No superlatives or promises: avoid *fastest*, *best-in-class*, *world-leading*, *100% secure*, *100% compatible*, *perfect*, *military-grade*.
 - No marketing CTAs ("Contact us immediately", "Buy now") inside technical pages.
 - Every factual claim must be verifiable against the [rustfs/rustfs](https://github.com/rustfs/rustfs) source or an official release. Never document hypothetical commands, flags, or components. If you are unsure whether a capability exists, remove the claim.
-- Do not restate performance numbers on feature pages; link to `/concepts/comparison` instead so figures live in one place.
+- Keep performance figures in one verified reference location instead of repeating them across pages.
 - Use USD (`$`) for any cost examples; never mix currencies.
 
 ## Page Skeleton
@@ -74,7 +74,7 @@ RUSTFS_VOLUMES="/data"
 
 ## Links
 
-- Internal links are root-relative paths without file extension: `/installation/linux/quick-start`, `/concepts/comparison`.
+- Internal links are root-relative paths without file extension: `/installation/linux/quick-start`, `/operations/status-check`.
 - Link text describes the target ("see the cloud-native installation guide"), never "click here".
 
 ## Images and Screenshots
@@ -89,7 +89,7 @@ RUSTFS_VOLUMES="/data"
 - Plain Markdown pages use `.md`.
 - Pages that need JSX components (`<Cards>`, `<Tabs>`, `<Steps>`, etc.) must use the `.mdx` extension. Do not put JSX in `.md` files.
 - Mermaid diagrams are supported in fenced ```mermaid blocks.
-- **Card icons:** when a landing grid (`<Cards>`) uses icons, use a single consistent set of monochrome line icons from `lucide-react` (registered in `press.config.tsx`), one semantically matched icon per card, applied to **every** card in the grid — never a partial set. Do not use emoji-as-icons and do not mix brand logos (e.g. the Docker whale) with abstract icons. Pass them via `<Card icon={<Rocket />} …>`.
+- **Card icons:** use one consistent icon family within each landing grid and apply an icon to every card. Use Lucide for abstract concepts. A platform-selection grid may use brand logos from `react-icons` when every primary card icon is a brand logo. Do not mix brand logos with abstract primary icons or use emoji as icons.
 
 ## Product Terminology
 

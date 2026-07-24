@@ -1,7 +1,6 @@
 {
   "title": "Developer",
   "pages": [
-    "mc",
     "sdk",
     "integration",
     "license"

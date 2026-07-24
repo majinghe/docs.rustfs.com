@@ -37,9 +37,9 @@ After signing in you land on the console home page, which shows:
 1. On the Buckets page, in the top right corner, select **Create Bucket**.
 2. Enter a bucket name (for example `my-first-bucket`) and click **Create**.
 
-![bucket creation](../management/data/bucket/images/bucket-creation-by-ui.png)
+![bucket creation](../administration/data/bucket/images/bucket-creation-by-ui.png)
 
-Full details, including `mc` and API alternatives, are in [Bucket Creation](../management/data/bucket/creation.md).
+Full details, including `rc` and API alternatives, are in [Bucket Creation](../administration/data/bucket/creation.md).
 
 ## 5. Upload Your First Object
 
@@ -47,20 +47,20 @@ Full details, including `mc` and API alternatives, are in [Bucket Creation](../m
 2. In the top right corner, select **Upload File/Folder**.
 3. Choose one or more local files and click **Start Upload**.
 
-![object creation from ui](../management/data/object/images/upload_file_from_ui.png)
+![object creation from ui](../administration/data/object/images/upload_file_from_ui.png)
 
 Click the uploaded object to view its details — size, ETag, content type, and a shareable link.
 
-![object details info](../management/data/object/images/object_details_info.png)
+![object details info](../administration/data/object/images/object_details_info.png)
 
-More options are covered in [Object Creation](../management/data/object/creation.md).
+More options are covered in [Object Creation](../administration/data/object/creation.md).
 
 ## 6. Create Access Keys for Applications
 
-The console sign-in credentials are administrator credentials — applications should use their own keys instead. Go to **Access Keys** in the console to create a scoped access key / secret key pair for your S3 clients and SDKs. See [Access Key Management](../administration/iam/access-token.md) for the full walkthrough.
+The console sign-in credentials are administrator credentials — applications should use their own keys instead. Go to **Access Keys** in the console to create a scoped access key / secret key pair for your S3 clients and SDKs. See [Access Key Management](../security-compliance/iam/access-token.md) for the full walkthrough.
 
 ## Next Steps
 
 - Point any S3-compatible client at `http://<server-ip>:9000` (the S3 API port) with your new access keys.
-- Explore [IAM management](../administration/iam/index.md) to add users and policies.
+- Explore [IAM management](../security-compliance/iam/index.md) to add users and policies.
 - Review the [production checklists](./requirement/checklists/index.md) before going live.

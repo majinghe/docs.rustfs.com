@@ -15,7 +15,7 @@ brew install awscli
 
 ## Configure
 
-Set your [access keys](../../administration/iam/access-token.md) and region:
+Set your [access keys](../../security-compliance/iam/access-token.md) and region:
 
 ```bash
 aws configure
@@ -68,4 +68,4 @@ aws s3 ls s3://my-bucket --endpoint-url http://localhost:9000
 
 ## Next steps
 
-Build applications against RustFS with an [S3 SDK](../sdk/index.md), or manage objects with [mc](../mc.md).
+Build applications against RustFS with an [S3 SDK](../sdk/index.md), or manage objects with [`rc`](/operations/rc).

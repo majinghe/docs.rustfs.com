@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Look up RustFS configuration variables, commands, ports, metrics, limits, and terminology."
+description: "Look up RustFS configuration variables, commands, ports, and metrics."
 ---
 
 Use this section for concise technical references while configuring, operating, or integrating RustFS.
@@ -11,5 +11,3 @@ Use this section for concise technical references while configuring, operating, 
 - [CLI](./cli.md)
 - [Ports & Health Endpoints](./ports.md)
 - [Metrics](./metrics.md)
-- [Usage Limits](/concepts/limit)
-- [Glossary](/concepts/glossary)

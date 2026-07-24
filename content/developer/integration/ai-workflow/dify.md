@@ -19,4 +19,4 @@ The exact setting names depend on the Dify version and deployment method. Match 
 
 ## Next steps
 
-See [Access Key Management](/administration/iam/access-token) to create dedicated credentials.
+See [Access Key Management](/security-compliance/iam/access-token) to create dedicated credentials.

@@ -19,4 +19,4 @@ The available fields depend on the n8n version and S3 integration in use. Confir
 
 ## Next steps
 
-See [Access Key Management](/administration/iam/access-token) to create dedicated credentials.
+See [Access Key Management](/security-compliance/iam/access-token) to create dedicated credentials.

@@ -11,6 +11,7 @@ RustFS ships an official Helm chart that deploys either a single-node instance (
 - Helm 3
 - RustFS image version `>= 1.0.0-alpha.69` (the chart requirement)
 - A StorageClass with a working provisioner — the chart defaults to [`local-path`](https://github.com/rancher/local-path-provisioner); set `storageclass.name` to use your own
+- [`rc`](/operations/rc) installed on the administration host before using the server-pool commands in this guide
 
 The chart lives in the RustFS source repository under `helm/rustfs`:
 
@@ -177,7 +178,7 @@ What to expect during the rollout, per the chart's documentation:
 
 :::note
 
-`rc` is the RustFS admin command-line client referenced by the chart documentation (`rc admin pool ls` / `expand` / `rebalance` / `decommission`). Confirm its availability and packaging with your RustFS distribution before relying on it in runbooks.
+`rc` is the RustFS command-line client. Use `rc admin pool list`, `expand`, `rebalance`, and `decommission` for the server-pool workflows described by the chart.
 
 :::
 

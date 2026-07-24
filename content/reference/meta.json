@@ -4,8 +4,6 @@
     "environment-variables",
     "cli",
     "ports",
-    "metrics",
-    "[Usage Limits](/concepts/limit)",
-    "[Glossary](/concepts/glossary)"
+    "metrics"
   ]
 }

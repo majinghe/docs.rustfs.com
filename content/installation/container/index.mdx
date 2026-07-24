@@ -14,6 +14,7 @@ This article is based on RustFS official Linux binary packages, packaging RustFS
 
  * Docker installed (≥ 20.10) and able to pull images and run containers normally
  * Local path `/mnt/rustfs/data` (or custom path) for mounting object data
+ * [`rc`](/operations/rc) installed on the administration host for the verification workflow
 2. **Network and Firewall**
 
  * Ensure host ports 9000 (S3 API) and 9001 (Console) are open to external access (or consistent with custom ports)
@@ -237,13 +238,13 @@ Whether you start only the `rustfs-server` or together with observability servic
 
 2. **Test S3 API:**
 
- Use `mc` or other S3 clients:
+ Use `rc` to verify the S3 API:
 
  ```bash
  # Use a unique access key and a strong, random secret (e.g. openssl rand -base64 24)
- mc alias set rustfs http://localhost:9000 "<your-access-key>" "<your-secret-key>"
- mc mb rustfs/mybucket
- mc ls rustfs
+ rc alias set rustfs http://localhost:9000 <your-access-key> <your-secret-key>
+ rc bucket create rustfs/my-bucket
+ rc bucket list rustfs/
  ```
 
  If buckets can be successfully created and listed, deployment is effective.

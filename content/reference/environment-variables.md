@@ -39,7 +39,7 @@ Boolean variables accept `true`/`false`. Values shown as "unset" have no default
 | `RUSTFS_CORS_ALLOWED_ORIGINS` | empty | Comma-separated origins allowed to access the S3 API from a browser. Set `*` for wildcard origins without credentials. |
 | `RUSTFS_CONSOLE_CORS_ALLOWED_ORIGINS` | `*` | Comma-separated origins allowed to access the Console from a browser, or `*` for all origins. |
 
-See [CORS Configuration](/management/cors) for configuration and verification steps.
+See [CORS Configuration](/administration/cors) for configuration and verification steps.
 
 ## TLS & KMS
 

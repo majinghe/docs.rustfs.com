@@ -47,4 +47,4 @@ curl -fsS http://<node-hostname>:9000/health/ready
 
 ## Next steps
 
-Review [Cluster Health Check](/operations/cluster-health-check) for additional post-upgrade validation.
+Review [Status Check](/operations/status-check) for additional post-upgrade validation.
